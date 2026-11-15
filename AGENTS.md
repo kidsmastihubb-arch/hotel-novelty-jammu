@@ -28,3 +28,6 @@ use the editor.
   own key and store it in Secrets.
 - **Secrets.** Lovable manages them. Do not put secret values in the repo.
 <!-- LOVABLE:END -->
+
+## Hotel Novelty site structure
+- Keep the public hotel experience on the single homepage; isolate booking validation and secure database writes in client-safe `src/lib/` function modules, because enquiry details must never be publicly readable.
