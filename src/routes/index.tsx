@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent, type LucideIcon } from "react";
+import { useEffect, useState, type CSSProperties, type FormEvent } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import {
@@ -28,6 +28,7 @@ import {
   UtensilsCrossed,
   Wifi,
   X,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -287,6 +288,8 @@ function HotelHomepage() {
   };
   const localDate = new Date();
   const today = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, "0")}-${String(localDate.getDate()).padStart(2, "0")}`;
+  const currentSlide = heroSlides[activeSlide] ?? heroSlides[0];
+  const activeGalleryItem = lightboxIndex === null ? undefined : galleryItems[lightboxIndex];
 
   return (
     <main>
@@ -323,10 +326,10 @@ function HotelHomepage() {
         ))}
         <div id="main-content" className="hero-content shell">
           <div className="hero-caption" key={activeSlide}>
-            <span className="eyebrow hero-eyebrow"><span />{heroSlides[activeSlide].eyebrow}</span>
-            <h1>{heroSlides[activeSlide].title}</h1>
-            <p>{heroSlides[activeSlide].description}</p>
-            <Button variant="hero" asChild><a href={`#${heroSlides[activeSlide].target}`}>{heroSlides[activeSlide].action}<ArrowRight aria-hidden="true" /></a></Button>
+            <span className="eyebrow hero-eyebrow"><span />{currentSlide.eyebrow}</span>
+            <h1>{currentSlide.title}</h1>
+            <p>{currentSlide.description}</p>
+            <Button className="hero-action" asChild><a href={`#${currentSlide.target}`}>{currentSlide.action}<ArrowRight aria-hidden="true" /></a></Button>
           </div>
           <div className="hero-bottom">
             <a className="hero-scroll" href="#about"><span className="scroll-line" /><span>SCROLL TO DISCOVER</span><ArrowDown aria-hidden="true" /></a>
@@ -398,7 +401,7 @@ function HotelHomepage() {
                   <h3>{room.name}</h3>
                   <p>{room.detail}</p>
                   <div className="room-facilities"><span><Check aria-hidden="true" /> Attached bathroom</span><span><Check aria-hidden="true" /> LCD TV · Intercom</span>{index !== 1 && <span><Check aria-hidden="true" /> Hot &amp; cold water</span>}</div>
-                  <Button variant="room" onClick={() => goToRoomEnquiry(room.name)}>Ask about this room <ArrowRight aria-hidden="true" /></Button>
+                  <Button className="room-action" onClick={() => goToRoomEnquiry(room.name)}>Ask about this room <ArrowRight aria-hidden="true" /></Button>
                 </div>
               </article>
             ))}
@@ -433,7 +436,7 @@ function HotelHomepage() {
           <p className="section-aside">Every journey is different. Enjoy the convenience of facilities that make a city stay a little simpler.</p>
         </div>
         <div className="amenities-grid">
-          {amenities.map(({ icon: Icon, name }, index) => <div className="amenity" key={name} data-reveal style={{ "--item-index": index } as React.CSSProperties}><span className="amenity-icon"><Icon aria-hidden="true" /></span><span>{name}</span><ArrowRight className="amenity-arrow" aria-hidden="true" /></div>)}
+          {amenities.map(({ icon: Icon, name }, index) => <div className="amenity" key={name} data-reveal style={{ "--item-index": index } as CSSProperties}><span className="amenity-icon"><Icon aria-hidden="true" /></span><span>{name}</span><ArrowRight className="amenity-arrow" aria-hidden="true" /></div>)}
         </div>
       </section>
 
@@ -475,7 +478,7 @@ function HotelHomepage() {
               [Mountain, "Help discovering the region", "Ask about local sightseeing and Kashmir tour arrangements."],
             ].map(([icon, title, copy], index) => {
               const Icon = icon as LucideIcon;
-              return <div className="why-item" key={title as string} style={{ "--item-index": index } as React.CSSProperties}><span><Icon aria-hidden="true" /></span><div><h3>{title as string}</h3><p>{copy as string}</p></div></div>;
+              return <div className="why-item" key={title as string} style={{ "--item-index": index } as CSSProperties}><span><Icon aria-hidden="true" /></span><div><h3>{title as string}</h3><p>{copy as string}</p></div></div>;
             })}
           </div>
           <a className="why-link" href="#booking">Come and make yourself at home <ArrowRight /></a>
@@ -577,11 +580,11 @@ function HotelHomepage() {
         <div className="footer-bottom shell"><span>© {new Date().getFullYear()} HOTEL NOVELTY · JAMMU</span><strong>Stay comfortable. Explore Jammu. Experience hospitality.</strong><a href="#home">BACK TO TOP <ArrowUp /></a></div>
       </footer>
 
-      {lightboxIndex !== null && (
+      {lightboxIndex !== null && activeGalleryItem && (
         <div className="lightbox" role="dialog" aria-modal="true" aria-label="Hotel Novelty photo gallery" onClick={() => setLightboxIndex(null)} onKeyDown={(event) => { if (event.key === "Escape") setLightboxIndex(null); }}>
           <Button className="lightbox-close" variant="ghost" size="icon" aria-label="Close gallery" onClick={() => setLightboxIndex(null)}><X /></Button>
           <Button className="lightbox-prev" variant="ghost" size="icon" aria-label="Previous photograph" onClick={(event) => { event.stopPropagation(); setLightboxIndex((lightboxIndex + galleryItems.length - 1) % galleryItems.length); }}><ChevronLeft /></Button>
-          <figure className="lightbox-image" onClick={(event) => event.stopPropagation()}><img src={galleryItems[lightboxIndex].image} alt={galleryItems[lightboxIndex].alt} /><figcaption><span>{galleryItems[lightboxIndex].category}</span><strong>{galleryItems[lightboxIndex].name}</strong><small>0{lightboxIndex + 1} / 0{galleryItems.length}</small></figcaption></figure>
+          <figure className="lightbox-image" onClick={(event) => event.stopPropagation()}><img src={activeGalleryItem.image} alt={activeGalleryItem.alt} /><figcaption><span>{activeGalleryItem.category}</span><strong>{activeGalleryItem.name}</strong><small>0{lightboxIndex + 1} / 0{galleryItems.length}</small></figcaption></figure>
           <Button className="lightbox-next" variant="ghost" size="icon" aria-label="Next photograph" onClick={(event) => { event.stopPropagation(); setLightboxIndex((lightboxIndex + 1) % galleryItems.length); }}><ChevronRight /></Button>
         </div>
       )}
